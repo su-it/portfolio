@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false">
+    <contextname>logback</contextname>
+    <property resource="application.yml" />
+
+    <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root" />
+    <property name="LOG_PATH" value="/logs" />
+    <property name="LOG_FILE_NAME" value="log" />
+    <property name="ERR_PATH" value="/logs/err" />
+    <property name="ERR_FILE_NAME" value="err" />
+    <property name="TLO_PATH" value="/logs/tlo" />
+    <property name="TLO_FILE_NAME" value="tlo" />
+    <property name="LOG_PATTERN" value="%-5level %d{yyyy-MM-dd HH:mm:ss}[%thread] [%logger:%line] - %msg%n" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 -->
+            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ERR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>error</level>
+        </filter>
+        <file>${ERR_PATH}/${ERR_FILE_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 -->
+            <fileNamePattern>${ERR_PATH}/${ERR_FILE_NAME}.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="TLO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${TLO_PATH}/${TLO_FILE_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 -->
+            <fileNamePattern>${TLO_PATH}/%d{yyyy-MM-dd}/${TLO_FILE_NAME}.%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>TLO</marker>
+            </evaluator>
+            <OnMatch>ACCEPT</OnMatch>
+            <OnMismatch>DENY</OnMismatch>
+        </filter>
+    </appender>
+
+    <root level="{LOG_LEVEL}">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="ERR_FILE" />
+        <appender-ref ref="TLO_FILE" />
+    </root>
+</configuration>

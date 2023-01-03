@@ -1,0 +1,75 @@
+application:
+  version: 0.0.1
+  title: portfolio
+spring:
+  profiles:
+    include: "constants"
+    group:
+      "local": "common,local"
+      #"dev": "common,dev"
+      #"prod": "common,prod"
+
+
+---
+##############################################
+# common
+##############################################
+
+spring:
+  config:
+    activate:
+      on-profile: "common"
+
+  thymeleaf.prefix: classpath:templates/
+  thymeleaf.suffix: .html
+  
+#  jackson:
+#    serialization:
+#      fail-on-empty-beans: false
+      
+  devtools.livereload.enabled: true
+
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+
+---  
+##############################################
+# local
+##############################################
+  
+spring:
+  config:
+    activate:
+      on-profile: "local"  
+  thymeleaf:
+    cache: false    #Thymeleaf cache (운영에서는 true, 개발에서는 false)
+
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/testdb?serverTimezone=Asia/Seoul
+#    username: root
+#    password: 1234
+#    hikari:
+#      connection-timeout: 60000 #default: 30000 = 30s
+#      maximunPoolSize: 20 #default: 10
+#      max-lifetime: 500 #DB wait-timeout = 600
+#  #mybatis:
+#    type-aliases-package: com.traveler.mileage.domain     
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: validate    
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy  #(카멜케이스)
+        #physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl   #(컬럼명 그대로)
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true   
